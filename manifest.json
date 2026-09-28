@@ -1,0 +1,16 @@
+{
+    "display_name": "数学公式键盘",
+    "loading_order": 100,
+    "js": "index.js",
+    "css": "style.css",
+    "author": "11329",
+    "version": "1.0.0",
+    "minimum_client_version": "1.17.0",
+    "homePage": "https://github.com/MisakaImouto13243/st-math-keyboard",
+    "auto_update": false,
+    "hooks": {
+        "activate": "onActivate",
+        "disable": "onDisable",
+        "clean": "onClean"
+    }
+}

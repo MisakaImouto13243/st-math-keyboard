@@ -1,0 +1,288 @@
+/* 相对本文件的路径解析：酒馆以 <link href=".../st-math-keyboard/style.css"> 注入本文件，
+   所以下面这行 @import 会正确指向同目录下的 vendor/katex/，字体也按同一基准解析。 */
+@import url("./vendor/katex/katex.min.css");
+
+/* ── 悬浮球 ────────────────────────────────── */
+
+.stmk-orb {
+    position: fixed;
+    z-index: 4000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 50%;
+    background: var(--SmartThemeBlurTintColor, #1f1f23);
+    color: var(--SmartThemeBodyColor, #e8e8e8);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    touch-action: none;
+    box-shadow: 0 4px 14px rgb(0 0 0 / 45%);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+.stmk-orb:hover {
+    transform: scale(1.06);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 55%);
+}
+
+.stmk-orb:focus-visible {
+    outline: 2px solid var(--SmartThemeQuoteColor, #7aa2f7);
+    outline-offset: 2px;
+}
+
+.stmk-orb-dragging {
+    transform: none;
+    cursor: grabbing;
+    transition: none;
+    opacity: 0.9;
+}
+
+.stmk-orb-active {
+    border-color: var(--SmartThemeQuoteColor, #7aa2f7);
+}
+
+.stmk-orb-glyph {
+    pointer-events: none;
+}
+
+.stmk-orb[hidden] {
+    display: none !important;
+}
+
+/* ── 面板 ─────────────────────────────────── */
+
+.stmk-panel {
+    position: fixed;
+    z-index: 4001;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    box-sizing: border-box;
+    width: min(460px, calc(100vw - 24px));
+    max-height: min(72vh, 660px);
+    padding: 12px;
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 10px;
+    background: var(--SmartThemeBlurTintColor, #1f1f23);
+    color: var(--SmartThemeBodyColor, #e8e8e8);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 55%);
+    backdrop-filter: blur(var(--SmartThemeBlurStrength, 10px));
+}
+
+/* 关键：flex 子项默认 min-width:auto，会被超宽内容（比如宽公式）顶开容器。
+   grid/flex 里所有会滚动的子项都必须显式允许收缩。 */
+.stmk-panel > * {
+    min-width: 0;
+}
+
+.stmk-panel[hidden] {
+    display: none !important;
+}
+
+.stmk-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.stmk-title {
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.stmk-icon-btn {
+    padding: 2px 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.stmk-icon-btn:hover {
+    background: rgb(255 255 255 / 10%);
+}
+
+/* 预览区 */
+
+.stmk-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 58px;
+    max-height: 140px;
+    padding: 8px 10px;
+    overflow: auto;
+    border: 1px dashed var(--SmartThemeBorderColor, #555);
+    border-radius: 8px;
+    background: rgb(0 0 0 / 18%);
+}
+
+.stmk-preview-math {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: center;
+}
+
+.stmk-preview-empty::after {
+    content: "公式会显示在这里";
+    font-size: 0.85em;
+    opacity: 0.45;
+}
+
+/* 草稿框 */
+
+.stmk-draft {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 52px;
+    padding: 6px 8px;
+    resize: vertical;
+    font-family: ui-monospace, Consolas, "Cascadia Mono", monospace;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+/* 分类标签 */
+
+.stmk-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-width: 0;
+}
+
+.stmk-tab {
+    padding: 3px 9px;
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 999px;
+    background: transparent;
+    color: inherit;
+    font-size: 0.8em;
+    cursor: pointer;
+    opacity: 0.75;
+}
+
+.stmk-tab:hover {
+    opacity: 1;
+}
+
+.stmk-tab-active {
+    border-color: var(--SmartThemeQuoteColor, #7aa2f7);
+    background: rgb(122 162 247 / 18%);
+    opacity: 1;
+}
+
+/* 符号键 */
+
+.stmk-keys {
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: repeat(auto-fill, minmax(52px, 1fr));
+    gap: 4px;
+    min-width: 0;
+    min-height: 96px;
+    padding: 2px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.stmk-key {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 40px;
+    padding: 4px 6px;
+    overflow: hidden;
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 6px;
+    background: rgb(255 255 255 / 5%);
+    color: inherit;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.12s ease;
+}
+
+.stmk-key:hover {
+    background: rgb(122 162 247 / 22%);
+}
+
+.stmk-key:focus-visible {
+    outline: 2px solid var(--SmartThemeQuoteColor, #7aa2f7);
+    outline-offset: 1px;
+}
+
+.stmk-key .katex {
+    max-width: 100%;
+    font-size: 1.02em;
+    white-space: nowrap;
+}
+
+/* 兜底：万一 KaTeX 样式表因网络或路径问题没加载，它那份用于无障碍的 MathML
+   副本会以未排版形态参与布局，把按钮撑成几千像素宽。这条与 katex.min.css 的
+   规则等价，只在自己面板内生效。 */
+.stmk-panel .katex-mathml {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+.stmk-key-wide {
+    grid-column: span 2;
+    font-size: 0.8em;
+    line-height: 1.2;
+}
+
+/* 底部按钮 */
+
+.stmk-footer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.stmk-footer .menu_button {
+    flex: 1 1 auto;
+    margin: 0;
+}
+
+.stmk-primary {
+    border-color: var(--SmartThemeQuoteColor, #7aa2f7) !important;
+}
+
+/* 窄屏：面板占满可用宽度，键盘区矮一点 */
+
+@media (max-width: 600px) {
+    .stmk-panel {
+        width: calc(100vw - 16px);
+        max-height: 66vh;
+    }
+
+    .stmk-keys {
+        grid-template-columns: repeat(auto-fill, minmax(46px, 1fr));
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .stmk-orb,
+    .stmk-key,
+    .stmk-tab {
+        transition: none !important;
+    }
+}
